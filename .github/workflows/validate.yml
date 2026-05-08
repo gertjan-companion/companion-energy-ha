@@ -23,3 +23,5 @@ jobs:
       - uses: hacs/action@main
         with:
           category: integration
+          # Pending submission to home-assistant/brands.
+          ignore: brands
