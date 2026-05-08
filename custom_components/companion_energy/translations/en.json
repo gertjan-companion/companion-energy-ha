@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Companion Energy",
+        "description": "Enter your Companion Energy API credentials.",
+        "data": {
+          "base_url": "API Base URL",
+          "api_key": "API Key"
+        },
+        "data_description": {
+          "base_url": "The base URL of the Companion Energy Customer API.",
+          "api_key": "Your API key in the format sk-comp-..."
+        }
+      },
+      "select_customers": {
+        "title": "Select Customers",
+        "description": "Choose which customers to monitor.",
+        "data": {
+          "customers": "Customers"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect to the API. Check the base URL.",
+      "invalid_auth": "Invalid API key. Check your credentials.",
+      "no_customers_selected": "Please select at least one customer.",
+      "unknown": "Unexpected error."
+    },
+    "abort": {
+      "already_configured": "This API key is already configured.",
+      "no_customers": "No customers found for this API key."
+    }
+  }
+}

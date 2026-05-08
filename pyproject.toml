@@ -1,0 +1,44 @@
+[project]
+name = "companion-energy-ha"
+version = "0.0.1"
+requires-python = ">=3.12"
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "homeassistant>=2024.1",
+    "ruff>=0.4",
+    "pre-commit>=3.7",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "TCH", # flake8-type-checking (move type-only imports into TYPE_CHECKING blocks)
+    "RUF", # ruff-specific rules
+]
+ignore = [
+    "E501", # line length — handled by formatter
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["custom_components.companion_energy"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

@@ -1,0 +1,109 @@
+submit_energy_intervals:
+  name: Submit Energy Intervals
+  description: >
+    Upload interval-based energy data (consumption and/or injection) for an asset.
+    Each data point represents the energy (kWh) during the period starting at the
+    given timestamp. Timestamps must match the asset's API integration granularity
+    (e.g., every 15 minutes or every hour). Use this for historical backfill or
+    correcting previously uploaded values (upsert behaviour).
+  fields:
+    customer_id:
+      name: Customer ID
+      description: UUID of the customer that owns the asset.
+      required: true
+      example: "789e4567-e89b-12d3-a456-426614174000"
+      selector:
+        text:
+    asset_id:
+      name: Asset ID
+      description: UUID of the asset to upload energy data for.
+      required: true
+      example: "456e4567-e89b-12d3-a456-426614174000"
+      selector:
+        text:
+    consumption:
+      name: Consumption data points
+      description: >
+        List of consumption interval data points. Each entry must have
+        ``timestamp_utc`` (ISO 8601 UTC, e.g. "2025-01-15T10:00:00Z") and
+        ``energy_kwh`` (non-negative float). At least one of consumption or
+        injection must be supplied.
+      required: false
+      selector:
+        object:
+    injection:
+      name: Injection data points
+      description: >
+        List of injection/production interval data points. Each entry must have
+        ``timestamp_utc`` (ISO 8601 UTC, e.g. "2025-01-15T10:00:00Z") and
+        ``energy_kwh`` (non-negative float). At least one of consumption or
+        injection must be supplied.
+      required: false
+      selector:
+        object:
+
+submit_telemetry:
+  name: Submit Telemetry
+  description: >
+    Push real-time telemetry data (power, SOC, or energy) to the
+    Companion Energy API for a specific asset.
+  fields:
+    customer_id:
+      name: Customer ID
+      description: UUID of the customer that owns the asset.
+      required: true
+      example: "789e4567-e89b-12d3-a456-426614174000"
+      selector:
+        text:
+    asset_id:
+      name: Asset ID
+      description: UUID of the asset to submit telemetry for.
+      required: true
+      example: "456e4567-e89b-12d3-a456-426614174000"
+      selector:
+        text:
+    timestamp_utc:
+      name: Timestamp (UTC)
+      description: >
+        Optional measurement timestamp in ISO 8601 format, naive UTC
+        (e.g. "2026-03-09T14:30:00"). The server uses the current time if omitted.
+      required: false
+      selector:
+        text:
+    soc:
+      name: State of Charge
+      description: Battery state of charge, between 0.0 (empty) and 1.0 (full).
+      required: false
+      selector:
+        number:
+          min: 0
+          max: 1
+          step: 0.001
+          mode: box
+    power_kw:
+      name: Power (kW)
+      description: >
+        Instantaneous power in kW. Positive = consumption/charge,
+        negative = production/discharge. Cannot be combined with energy fields.
+      required: false
+      selector:
+        number:
+          mode: box
+    consumption_kwh:
+      name: Cumulative Consumption (kWh)
+      description: >
+        Cumulative energy consumption counter in kWh (ever-increasing).
+        Cannot be combined with power_kw.
+      required: false
+      selector:
+        number:
+          mode: box
+    injection_kwh:
+      name: Cumulative Injection (kWh)
+      description: >
+        Cumulative energy injection/production counter in kWh (ever-increasing).
+        Cannot be combined with power_kw.
+      required: false
+      selector:
+        number:
+          mode: box
