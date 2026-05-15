@@ -23,6 +23,11 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+_UUID_RE = (
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
+_UUID_FIELD = vol.All(str, vol.Match(_UUID_RE))
+
 _ENERGY_DATA_POINT_SCHEMA = vol.Schema(
     {
         vol.Required("timestamp_utc"): str,
@@ -32,8 +37,8 @@ _ENERGY_DATA_POINT_SCHEMA = vol.Schema(
 
 _SUBMIT_ENERGY_INTERVALS_SCHEMA = vol.Schema(
     {
-        vol.Required("customer_id"): str,
-        vol.Required("asset_id"): str,
+        vol.Required("customer_id"): _UUID_FIELD,
+        vol.Required("asset_id"): _UUID_FIELD,
         vol.Optional("consumption"): [_ENERGY_DATA_POINT_SCHEMA],
         vol.Optional("injection"): [_ENERGY_DATA_POINT_SCHEMA],
     }
@@ -41,8 +46,8 @@ _SUBMIT_ENERGY_INTERVALS_SCHEMA = vol.Schema(
 
 _SUBMIT_TELEMETRY_SCHEMA = vol.Schema(
     {
-        vol.Required("customer_id"): str,
-        vol.Required("asset_id"): str,
+        vol.Required("customer_id"): _UUID_FIELD,
+        vol.Required("asset_id"): _UUID_FIELD,
         vol.Optional("timestamp_utc"): str,
         vol.Optional("soc"): vol.All(vol.Coerce(float), vol.Range(min=0, max=1)),
         vol.Optional("power_kw"): vol.Coerce(float),

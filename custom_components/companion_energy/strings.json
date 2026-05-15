@@ -24,6 +24,8 @@
     "error": {
       "cannot_connect": "Failed to connect to the API. Check the base URL.",
       "invalid_auth": "Invalid API key. Check your credentials.",
+      "invalid_url": "Enter a valid http(s) URL.",
+      "insecure_url": "HTTPS is required (HTTP is only allowed for localhost).",
       "no_customers_selected": "Please select at least one customer.",
       "unknown": "Unexpected error."
     },
