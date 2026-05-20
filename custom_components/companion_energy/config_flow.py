@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import ipaddress
 import re
 from typing import Any
+from urllib.parse import urlparse
 
 import aiohttp
 import voluptuous as vol
@@ -26,6 +28,28 @@ from .api_client import (
 from .const import CONF_API_KEY, CONF_BASE_URL, CONF_CUSTOMERS, DOMAIN
 
 _API_KEY_RE = re.compile(r"^sk-comp-[A-Za-z0-9+/=_\-]+$")
+
+
+def _is_local_host(host: str) -> bool:
+    """Return True for hostnames safe to use over plain HTTP (loopback only)."""
+    if not host:
+        return False
+    if host in ("localhost",):
+        return True
+    try:
+        return ipaddress.ip_address(host).is_loopback
+    except ValueError:
+        return False
+
+
+def _validate_base_url(base_url: str) -> str | None:
+    """Return an error key if *base_url* is unsafe, otherwise None."""
+    parsed = urlparse(base_url)
+    if parsed.scheme not in ("http", "https") or not parsed.hostname:
+        return "invalid_url"
+    if parsed.scheme == "http" and not _is_local_host(parsed.hostname):
+        return "insecure_url"
+    return None
 
 
 class CompanionEnergyConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -51,8 +75,10 @@ class CompanionEnergyConfigFlow(ConfigFlow, domain=DOMAIN):
             # Prevent duplicate entries for the same API key
             self._async_abort_entries_match({CONF_API_KEY: api_key})
 
-            # Validate API key format (soft check)
-            if not _API_KEY_RE.match(api_key):
+            url_error = _validate_base_url(base_url)
+            if url_error:
+                errors[CONF_BASE_URL] = url_error
+            elif not _API_KEY_RE.match(api_key):
                 errors[CONF_API_KEY] = "invalid_auth"
             else:
                 async with aiohttp.ClientSession() as session:

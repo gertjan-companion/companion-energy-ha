@@ -20,6 +20,10 @@ _LOGGER = logging.getLogger(__name__)
 class CompanionEnergyApiError(Exception):
     """General API error."""
 
+    def __init__(self, message: str, status: int | None = None) -> None:
+        super().__init__(message)
+        self.status = status
+
 
 class CompanionEnergyAuthError(CompanionEnergyApiError):
     """Authentication / authorisation failure (HTTP 401 or 403)."""
@@ -68,7 +72,7 @@ class CompanionEnergyApiClient:
             return await self._request("GET", path)
         except CompanionEnergyApiError as exc:
             # 404 means no setpoint while steering is inactive — not an error
-            if "404" in str(exc):
+            if exc.status == 404:
                 return None
             raise
 
@@ -115,21 +119,17 @@ class CompanionEnergyApiClient:
                 method, url, headers=headers, **kwargs
             ) as resp:
                 if resp.status in (401, 403):
-                    body = await resp.text()
                     _LOGGER.error(
-                        "Auth error HTTP %s on %s %s — response: %s",
-                        resp.status,
-                        method,
-                        url,
-                        body,
+                        "Auth error HTTP %s on %s %s", resp.status, method, url
                     )
                     raise CompanionEnergyAuthError(
-                        f"Authentication failed: HTTP {resp.status} on {method} {url}"
+                        f"Authentication failed: HTTP {resp.status} on {method} {url}",
+                        status=resp.status,
                     )
                 if resp.status >= 400:
-                    text = await resp.text()
                     raise CompanionEnergyApiError(
-                        f"HTTP {resp.status} for {method} {url}: {text}"
+                        f"HTTP {resp.status} for {method} {url}",
+                        status=resp.status,
                     )
                 return await resp.json()
         except CompanionEnergyApiError:

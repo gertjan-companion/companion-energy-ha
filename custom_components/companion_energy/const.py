@@ -45,6 +45,5 @@ SERVICE_SUBMIT_TELEMETRY = "submit_telemetry"
 SERVICE_SUBMIT_ENERGY_INTERVALS = "submit_energy_intervals"
 
 # hass.data keys
-DATA_SESSION = "session"
 DATA_API_CLIENT = "api_client"
 DATA_ASSET_COORDINATORS = "asset_coordinators"

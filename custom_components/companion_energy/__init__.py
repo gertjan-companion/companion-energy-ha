@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import aiohttp
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -17,7 +17,6 @@ from .const import (
     CONF_CUSTOMERS,
     DATA_API_CLIENT,
     DATA_ASSET_COORDINATORS,
-    DATA_SESSION,
     DOMAIN,
 )
 from .coordinator import CompanionEnergyAssetCoordinator
@@ -33,7 +32,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     api_key: str = entry.data[CONF_API_KEY]
     customers: list[dict] = entry.data[CONF_CUSTOMERS]
 
-    session = aiohttp.ClientSession()
+    session = async_get_clientsession(hass)
     api_client = CompanionEnergyApiClient(base_url, api_key, session)
 
     # One coordinator per customer
@@ -49,7 +48,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         asset_coordinators[customer["id"]] = coordinator
 
     hass.data[DOMAIN][entry.entry_id] = {
-        DATA_SESSION: session,
         DATA_API_CLIENT: api_client,
         DATA_ASSET_COORDINATORS: asset_coordinators,
     }
@@ -69,9 +67,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
     if unload_ok:
-        entry_data = hass.data[DOMAIN].pop(entry.entry_id, {})
-        session: aiohttp.ClientSession | None = entry_data.get(DATA_SESSION)
-        if session and not session.closed:
-            await session.close()
+        hass.data[DOMAIN].pop(entry.entry_id, None)
 
     return unload_ok
