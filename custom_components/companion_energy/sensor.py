@@ -23,7 +23,6 @@ if TYPE_CHECKING:
 
 from .const import (
     ASSET_TYPE_BATTERY,
-    CONF_BASE_URL,
     DATA_ASSET_COORDINATORS,
     DOMAIN,
 )
@@ -39,7 +38,6 @@ async def async_setup_entry(
 ) -> None:
     """Set up sensor entities from a config entry."""
     entry_data = hass.data[DOMAIN][entry.entry_id]
-    base_url: str = entry.data[CONF_BASE_URL]
 
     entities: list[SensorEntity] = []
 
@@ -50,16 +48,12 @@ async def async_setup_entry(
             name = asset.get("name", uuid)
             asset_type = asset.get("asset_type", "unknown")
 
+            entities.append(AssetPowerSensor(coordinator, uuid, name, asset_type))
             entities.append(
-                AssetPowerSensor(coordinator, uuid, name, asset_type, base_url)
-            )
-            entities.append(
-                AssetSteeringStateSensor(coordinator, uuid, name, asset_type, base_url)
+                AssetSteeringStateSensor(coordinator, uuid, name, asset_type)
             )
             if asset_type == ASSET_TYPE_BATTERY:
-                entities.append(
-                    AssetSOCSensor(coordinator, uuid, name, asset_type, base_url)
-                )
+                entities.append(AssetSOCSensor(coordinator, uuid, name, asset_type))
 
     async_add_entities(entities, update_before_add=False)
 
@@ -84,9 +78,8 @@ class AssetPowerSensor(CompanionEnergyEntity, SensorEntity):
         asset_uuid: str,
         asset_name: str,
         asset_type: str,
-        base_url: str,
     ) -> None:
-        super().__init__(coordinator, asset_uuid, asset_name, asset_type, base_url)
+        super().__init__(coordinator, asset_uuid, asset_name, asset_type)
         self._attr_unique_id = f"{DOMAIN}_{asset_uuid}_power"
         self._attr_name = "Power"
 
@@ -114,9 +107,8 @@ class AssetSteeringStateSensor(CompanionEnergyEntity, SensorEntity):
         asset_uuid: str,
         asset_name: str,
         asset_type: str,
-        base_url: str,
     ) -> None:
-        super().__init__(coordinator, asset_uuid, asset_name, asset_type, base_url)
+        super().__init__(coordinator, asset_uuid, asset_name, asset_type)
         self._attr_unique_id = f"{DOMAIN}_{asset_uuid}_steering_state"
         self._attr_name = "Steering State"
 
@@ -166,9 +158,8 @@ class AssetSOCSensor(CompanionEnergyEntity, SensorEntity, RestoreEntity):
         asset_uuid: str,
         asset_name: str,
         asset_type: str,
-        base_url: str,
     ) -> None:
-        super().__init__(coordinator, asset_uuid, asset_name, asset_type, base_url)
+        super().__init__(coordinator, asset_uuid, asset_name, asset_type)
         self._attr_unique_id = f"{DOMAIN}_{asset_uuid}_soc"
         self._attr_name = "State of Charge"
         self._soc: float | None = None

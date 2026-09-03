@@ -10,6 +10,11 @@ CONF_CUSTOMERS = "customers"
 # Update intervals (seconds)
 SCAN_INTERVAL_ASSETS = 30
 
+# How many scheduled future setpoints to ask for (API accepts 1-100). 24 covers
+# a day of hourly steps; automations reading the schedule can also fall back to
+# it if HA loses connectivity.
+SETPOINT_SCHEDULE_LIMIT = 24
+
 # API path templates
 API_PATH_CUSTOMERS = "/customers"
 API_PATH_ASSETS = "/customer/{customer_id}/assets"

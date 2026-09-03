@@ -23,23 +23,21 @@ class CompanionEnergyEntity(CoordinatorEntity[CompanionEnergyAssetCoordinator]):
         asset_uuid: str,
         asset_name: str,
         asset_type: str,
-        base_url: str,
     ) -> None:
         super().__init__(coordinator)
         self._asset_uuid = asset_uuid
         self._asset_name = asset_name
         self._asset_type = asset_type
-        self._base_url = base_url
 
     @property
     def device_info(self) -> DeviceInfo:
-        customer_id = self.coordinator.customer_id
+        # ponytail: no configuration_url. It used to be built from the API base
+        # URL, which serves bearer-authenticated JSON — a dead link in a
+        # browser. Add one back when there is a confirmed dashboard route for
+        # an asset.
         return DeviceInfo(
             identifiers={(DOMAIN, self._asset_uuid)},
             name=self._asset_name,
             manufacturer="Companion Energy",
             model=self._asset_type.title(),
-            configuration_url=(
-                f"{self._base_url}/customer/{customer_id}/assets/{self._asset_uuid}"
-            ),
         )

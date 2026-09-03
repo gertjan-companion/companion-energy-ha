@@ -43,7 +43,7 @@ Copy `custom_components/companion_energy/` into your HA `config/custom_component
 | Entity | Unit | Notes |
 |---|---|---|
 | `sensor.<asset>_power` | kW | Positive = charge/consume; negative = discharge/produce |
-| `sensor.<asset>_steering_state` | — | One of: `charge`, `discharge`, `self_consumption`, `curtailment`, `max`, `off`, `consumption`, `injection`, `unsteered` |
+| `sensor.<asset>_steering_state` | — | One of: `charge`, `discharge`, `self consumption`, `curtailment`, `max`, `off`, `consumption`, `injection`, `unsteered`. Note the space in `self consumption` — that is the API's wire value, not an underscore. |
 | `sensor.<asset>_state_of_charge` | % | Batteries only; reflects the last submitted SOC |
 
 ## Services

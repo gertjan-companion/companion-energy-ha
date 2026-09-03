@@ -82,6 +82,16 @@ async def test_get_assets(client, mock_session):
     assert result[0]["uuid"] == "abc"
 
 
+async def test_get_asset_setpoint_requests_the_schedule(client, mock_session):
+    # Without `limit` the API omits scheduled_setpoints entirely.
+    mock_session.request.return_value = _make_response(
+        200,
+        {"power_kw": -5.0, "steering_state": "discharge", "scheduled_setpoints": []},
+    )
+    await client.get_asset_setpoint("cust-1", "asset-1")
+    assert mock_session.request.call_args.kwargs["params"] == {"limit": 24}
+
+
 async def test_get_asset_setpoint_404_returns_none(client, mock_session):
     mock_session.request.return_value = _make_response(404, text="Not Found")
     result = await client.get_asset_setpoint("cust-1", "asset-1")
