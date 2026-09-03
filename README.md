@@ -14,7 +14,7 @@ A [Home Assistant](https://www.home-assistant.io/) custom integration for the [C
 
 - Home Assistant 2024.1 or later
 - [HACS](https://hacs.xyz) installed
-- A Companion Energy API key (`sk-comp-...`) — generate one from the Companion Energy dashboard under **Customer → API Keys**
+- A Companion Energy API key — generate one from the Companion Energy dashboard under **Customer → API Keys**. New keys look like `sk_live_...`; older ones (`sk-comp-...`) still work.
 
 ## Installation
 
@@ -33,7 +33,7 @@ Copy `custom_components/companion_energy/` into your HA `config/custom_component
 
 1. Go to **Settings → Devices & Services → Add Integration**
 2. Search for **Companion Energy**
-3. Enter your API base URL (e.g. `https://api.companion.energy`) and API key
+3. Enter your API base URL (`https://api.companion.energy/v2`) and API key
 4. Select which customers to monitor
 
 ## Entities

@@ -27,7 +27,12 @@ from .api_client import (
 )
 from .const import CONF_API_KEY, CONF_BASE_URL, CONF_CUSTOMERS, DOMAIN
 
-_API_KEY_RE = re.compile(r"^sk-comp-[A-Za-z0-9+/=_\-]+$")
+# Two key systems are live: the legacy DB keys (`sk-comp-...`) and the
+# WorkOS-issued ones every new customer key now gets (`sk_live_...`). The API
+# validates against both, so this is deliberately only a shape check — enough to
+# catch a pasted password or a truncated key, without encoding either system's
+# prefix. The API is the authority on whether a key is valid.
+_API_KEY_RE = re.compile(r"^sk[-_][A-Za-z0-9+/=_\-]{8,}$")
 
 
 def _is_local_host(host: str) -> bool:
@@ -98,7 +103,7 @@ class CompanionEnergyConfigFlow(ConfigFlow, domain=DOMAIN):
         schema = vol.Schema(
             {
                 vol.Required(
-                    CONF_BASE_URL, default="https://api.companion.energy"
+                    CONF_BASE_URL, default="https://api.companion.energy/v2"
                 ): TextSelector(TextSelectorConfig(type=TextSelectorType.URL)),
                 vol.Required(CONF_API_KEY): TextSelector(
                     TextSelectorConfig(type=TextSelectorType.PASSWORD)
