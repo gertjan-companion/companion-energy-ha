@@ -26,5 +26,9 @@ jobs:
       - uses: hacs/action@dcb30e72781db3f207d5236b861172774ab0b485 # main @ 2026-05-13
         with:
           category: integration
-          # Pending submission to home-assistant/brands.
+          # Still ignored: this check wants the domain present in
+          # home-assistant/brands (the CDN). Our images ship in
+          # custom_components/companion_energy/brand/ instead, which HA reads
+          # directly from 2026.3 on. Drop this line if we ever submit to the CDN
+          # for the benefit of older installs.
           ignore: brands

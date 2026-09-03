@@ -29,6 +29,8 @@ A [Home Assistant](https://www.home-assistant.io/) custom integration for the [C
 
 Copy `custom_components/companion_energy/` into your HA `config/custom_components/` directory and restart.
 
+The Companion Energy icon and logo ship in `custom_components/companion_energy/brand/`; Home Assistant serves them from there on 2026.3 or later. Older installs fall back to a generic placeholder — the integration works either way.
+
 ## Configuration
 
 1. Go to **Settings → Devices & Services → Add Integration**
