@@ -21,8 +21,6 @@ from .conftest import (
     MOCK_SETPOINT,
 )
 
-BASE_URL = "https://api.companion.energy"
-
 
 def _make_asset_coordinator(setpoint=None, last_soc=None):
     coord = MagicMock()
@@ -45,8 +43,20 @@ def _make_asset_sensor(cls):
     sensor._asset_uuid = ASSET_UUID
     sensor._asset_name = ASSET_NAME
     sensor._asset_type = "battery"
-    sensor._base_url = BASE_URL
     return sensor
+
+
+# ---------------------------------------------------------------------------
+# Device
+# ---------------------------------------------------------------------------
+
+
+def test_device_links_to_the_dashboard_asset_page():
+    sensor = _make_asset_sensor(AssetPowerSensor)
+    assert sensor.device_info["configuration_url"] == (
+        f"https://my.companion.energy/app/orgs/{CUSTOMER_ID}"
+        f"/control-room/assets/{ASSET_UUID}"
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -101,7 +111,6 @@ def test_soc_sensor_from_coordinator_last_soc():
     sensor._asset_uuid = ASSET_UUID
     sensor._asset_name = ASSET_NAME
     sensor._asset_type = "battery"
-    sensor._base_url = BASE_URL
     sensor._soc = None
     assert sensor.native_value == pytest.approx(72.0)
 
@@ -113,6 +122,5 @@ def test_soc_sensor_falls_back_to_cached_value():
     sensor._asset_uuid = ASSET_UUID
     sensor._asset_name = ASSET_NAME
     sensor._asset_type = "battery"
-    sensor._base_url = BASE_URL
     sensor._soc = 55.0  # previously restored
     assert sensor.native_value == pytest.approx(55.0)

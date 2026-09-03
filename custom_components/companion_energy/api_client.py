@@ -12,6 +12,7 @@ from .const import (
     API_PATH_CUSTOMERS,
     API_PATH_ENERGY_INTERVALS,
     API_PATH_TELEMETRY,
+    SETPOINT_SCHEDULE_LIMIT,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -56,7 +57,7 @@ class CompanionEnergyApiClient:
         path = API_PATH_ASSETS.format(customer_id=customer_id)
         params = {
             "fields": (
-                "label,location,asset_type,customer_id,customer_name,"
+                "location,asset_type,customer_id,customer_name,"
                 "config,nomination_enabled,steering_enabled,integrations"
             )
         }
@@ -64,12 +65,18 @@ class CompanionEnergyApiClient:
         return data.get("assets", [])
 
     async def get_asset_setpoint(self, customer_id: str, asset_id: str) -> dict | None:
-        """Return the current setpoint for an asset, or None if unavailable."""
+        """Return the current setpoint for an asset, or None if unavailable.
+
+        Asks for the schedule ahead as well: the API leaves `scheduled_setpoints`
+        out entirely unless `limit` is passed.
+        """
         path = API_PATH_ASSET_SETPOINT.format(
             customer_id=customer_id, asset_id=asset_id
         )
         try:
-            return await self._request("GET", path)
+            return await self._request(
+                "GET", path, params={"limit": SETPOINT_SCHEDULE_LIMIT}
+            )
         except CompanionEnergyApiError as exc:
             # 404 means no setpoint while steering is inactive — not an error
             if exc.status == 404:
