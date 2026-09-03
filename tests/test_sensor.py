@@ -47,6 +47,19 @@ def _make_asset_sensor(cls):
 
 
 # ---------------------------------------------------------------------------
+# Device
+# ---------------------------------------------------------------------------
+
+
+def test_device_links_to_the_dashboard_asset_page():
+    sensor = _make_asset_sensor(AssetPowerSensor)
+    assert sensor.device_info["configuration_url"] == (
+        f"https://my.companion.energy/app/orgs/{CUSTOMER_ID}"
+        f"/control-room/assets/{ASSET_UUID}"
+    )
+
+
+# ---------------------------------------------------------------------------
 # Power sensor
 # ---------------------------------------------------------------------------
 

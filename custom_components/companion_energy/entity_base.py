@@ -5,7 +5,7 @@ from __future__ import annotations
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .const import DASHBOARD_ASSET_URL, DOMAIN
 from .coordinator import CompanionEnergyAssetCoordinator
 
 
@@ -31,13 +31,13 @@ class CompanionEnergyEntity(CoordinatorEntity[CompanionEnergyAssetCoordinator]):
 
     @property
     def device_info(self) -> DeviceInfo:
-        # ponytail: no configuration_url. It used to be built from the API base
-        # URL, which serves bearer-authenticated JSON — a dead link in a
-        # browser. Add one back when there is a confirmed dashboard route for
-        # an asset.
         return DeviceInfo(
             identifiers={(DOMAIN, self._asset_uuid)},
             name=self._asset_name,
             manufacturer="Companion Energy",
             model=self._asset_type.title(),
+            configuration_url=DASHBOARD_ASSET_URL.format(
+                customer_id=self.coordinator.customer_id,
+                asset_id=self._asset_uuid,
+            ),
         )
